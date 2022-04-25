@@ -15,14 +15,17 @@ export const getBalances = createAsyncThunk(
   "account/getBalances",
   async ({ address, networkID, provider }: IBaseAddressAsyncThunk) => {
     const hiroContract = new ethers.Contract(addresses[networkID].HIRO_ADDRESS as string, ierc20Abi, provider);
+    const bnbContract = new ethers.Contract(addresses[networkID].WBNB_TOKEN_ADDRESS as string, ierc20Abi, provider);
     const ohmBalance = await hiroContract.balanceOf(address);
-    const swapAllowance = await hiroContract.allowance(address, addresses[networkID].ROUTER_ADDRESS);
-    console.log("[tz]: swap allowance", swapAllowance);
-
+    const hswapAllowance = await hiroContract.allowance(address, addresses[networkID].ROUTER_ADDRESS);
+    const bSwapAllowance = await bnbContract.allowance(address, addresses[networkID].ROUTER_ADDRESS);
+    console.log("[tz]: hswap allowance", hswapAllowance);
+    console.log("[tz]: bswap allowance", bSwapAllowance);
     return {
       balances: {
         ohm: ethers.utils.formatUnits(ohmBalance, "gwei"),
-        hiroSwapAllowance: swapAllowance,
+        hiroSwapAllowance: hswapAllowance,
+        ethSwapAllowance: bSwapAllowance,
       },
     };
   },

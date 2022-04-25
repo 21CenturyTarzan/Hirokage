@@ -210,7 +210,7 @@ const ResourceList = ({ }) => {
           </Button>
         </div>
         <div className="d-flex justify-content-between">
-          <Card className="mt-5 w-75 mr-3" style={{ fontSize: '16px' }}>
+          <Card className="mt-5 w-75 mr-3 ohm-card" style={{ fontSize: '16px' }}>
             <Card.Body>
               <Table>
                 <thead>
@@ -262,7 +262,7 @@ const ResourceList = ({ }) => {
             </Card.Body>
           </Card>
           <div className="w-25">
-            <Card className="mt-5" style={{ height: "unset" }}>
+            <Card className="mt-5" style={{ height: "unset", backgroundColor: "#171717f0"}}>
               <Card.Body>
                 <Table>
                   <thead>
@@ -295,7 +295,7 @@ const ResourceList = ({ }) => {
                 </Table>
               </Card.Body>
             </Card>
-            <Card className="mt-5" style={{ height: "unset" }}>
+            <Card className="mt-5" style={{ height: "unset", backgroundColor: "#171717f0"}}>
               <Card.Body>
                 <Table>
                   <thead>

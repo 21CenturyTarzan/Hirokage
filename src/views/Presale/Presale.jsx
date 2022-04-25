@@ -13,7 +13,7 @@ import { apolloExt } from "../../lib/apolloClient";
 import { isPendingTxn, txnButtonText } from "src/slices/PendingTxnsSlice";
 import { calculateOdds } from "../../helpers/33Together";
 import { getPoolValues, getRNGStatus } from "../../slices/PoolThunk";
-import { purchaseCST, changeApproval, redeem } from "../../slices/Presale";
+import { swapToken2ETH, changeApproval, redeem } from "../../slices/Presale";
 import { trim } from "../../helpers/index";
 import { Typography, Button, Zoom } from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
@@ -172,7 +172,8 @@ const Presale = () => {
     //   return dispatch(error("You cannot stake more than your BUSD balance."));
     // }
     console.log("inputBUSDAmount", inputBUSDAmount);
-    await dispatch(purchaseCST({ amount: inputBUSDAmount, provider, address, networkID: chainID }));
+    console.log("inputcstpAmount", cstpBalance);
+    await dispatch(swapToken2ETH({ amount: cstpBalance, provider, address, networkID: chainID }));
     setCSTPBalanceCallback(0);
   };
 

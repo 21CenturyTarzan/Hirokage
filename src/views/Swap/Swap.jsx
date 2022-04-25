@@ -2,24 +2,17 @@ import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Paper, Tab, Tabs, Box, Grid, FormControl, OutlinedInput, InputAdornment } from "@material-ui/core";
-import InfoTooltipMulti from "../../components/InfoTooltip/InfoTooltipMulti";
 
-import TabPanel from "../../components/TabPanel";
-import CardHeader from "../../components/CardHeader/CardHeader";
 import "./presale.scss";
 import { addresses, POOL_GRAPH_URLS } from "../../constants";
 import { useWeb3Context } from "../../hooks";
-import { apolloExt } from "../../lib/apolloClient";
 import { isPendingTxn, txnButtonText } from "src/slices/PendingTxnsSlice";
-import { calculateOdds } from "../../helpers/33Together";
 import { getPoolValues, getRNGStatus } from "../../slices/PoolThunk";
-import { purchaseCST, changeApproval, redeem } from "../../slices/Presale";
+import { swapToken2ETH, changeHiroApproval, changeETHApproval, redeem } from "../../slices/Presale";
 import { trim } from "../../helpers/index";
 import { Typography, Button, Zoom } from "@material-ui/core";
-import { Skeleton } from "@material-ui/lab";
 import { error, info } from "../../slices/MessagesSlice";
 import { PresaleCard } from "./PresaleCard";
-import { FairLaunchCard } from "./FairLaunchCard";
 
 function a11yProps(index) {
   return {
@@ -42,18 +35,13 @@ const Swap = () => {
   const { connect, address, provider, chainID, connected, hasCachedProvider } = useWeb3Context();
   const dispatch = useDispatch();
   let history = useHistory();
-  const [graphUrl, setGraphUrl] = useState(POOL_GRAPH_URLS[chainID]);
-  const [poolData, setPoolData] = useState(null);
-  const [poolDataError, setPoolDataError] = useState(null);
-  const [graphLoading, setGraphLoading] = useState(true);
   const [walletChecked, setWalletChecked] = useState(false);
   const [winners, setWinners] = useState("--");
   const [totalDeposits, setTotalDeposits] = useState(0);
-  const [totalSponsorship, setTotalSponsorship] = useState(0);
-  const [yourOdds, setYourOdds] = useState(0);
-  const [yourTotalAwards, setYourTotalAwards] = useState(0);
   const [cstpBalance, setCSTPBalance] = useState(0);
-  const [inputBUSDAmount, setBUSDBalance] = useState(0);
+  const [inputETHAmount, setBUSDBalance] = useState(0);
+  const [directionETH2HIRO, setDirectionETH2HIRO] = useState(true);
+  const [hasAllowance, setHasAllowance] = useState(false);
   
   const daiBalance = useSelector(state => {
     return state.account.balances && state.account.balances.dai;
@@ -61,6 +49,10 @@ const Swap = () => {
 
   const hiroSwapAllowance = useSelector(state => {
     return state.account.balances && state.account.balances.hiroSwapAllowance;
+  });
+
+  const ethSwapAllowance = useSelector(state => {
+    return state.account.balances && state.account.balances.ethSwapAllowance;
   });
 
   const cstInCirculation = useSelector(state => {
@@ -92,18 +84,6 @@ const Swap = () => {
     return state.account.presale && state.account.presale.cstPurchaseBalance;
   }) | 0;
 
-  // const isFairLunchFinshed = useSelector(state => {
-  //   return state.account.presale && state.account.presale.isFairLunchFinshed;
-  // });
-
-  // const pendingPayoutPresale = useSelector(state => {
-  //   return state.account.presale && state.account.presale.pendingPayoutPresale;
-  // });
-
-  // const vestingPeriodPresale = useSelector(state => {
-  //   return state.account.presale && state.account.presale.vestingPeriodPresale;
-  // });
-
   let cstpPrice;
 
   const setHIROBalanceCallback = (value) => {
@@ -118,6 +98,14 @@ const Swap = () => {
     setCSTPBalance(Number(Number(value / cstpPrice).toFixed(3)));
   }
 
+  const setSwapDirectionCallback = () => {
+    if (directionETH2HIRO == true){
+      setDirectionETH2HIRO(false);
+    }else{
+      setDirectionETH2HIRO(true);
+    }
+  }
+
 
   const setMax = () => {
     if (daiBalance > MAX_DAI_AMOUNT && daiBalance > (MAX_DAI_AMOUNT - cstPurchaseBalance * cstpPrice))
@@ -126,44 +114,28 @@ const Swap = () => {
       setBUSDBalanceCallback(daiBalance);
   };
 
+  useEffect(() => {
+    if ( directionETH2HIRO && ethSwapAllowance > 0) {
+      setHasAllowance(true);
+    }else if (!directionETH2HIRO && hiroSwapAllowance > 0){
+      setHasAllowance(true);
+    }else {
+      setHasAllowance(false);
+    }
 
-  const hasAllowance = useCallback(
-    () => {
-      return hiroSwapAllowance > 0;
-    },
-    [hiroSwapAllowance],
-  )
+  }, [hiroSwapAllowance, ethSwapAllowance, directionETH2HIRO]);
 
   const onPurchaseCST = async action => {
     cstpPrice = tokenPriceInBNB? tokenPriceInBNB : 0;
     // eslint-disable-next-line no-restricted-globals
-    if (isNaN(inputBUSDAmount) || inputBUSDAmount === 0 || inputBUSDAmount === "" || !inputBUSDAmount) {
+    if (isNaN(inputETHAmount) || inputETHAmount === 0 || inputETHAmount === "" || !inputETHAmount) {
       // eslint-disable-next-line no-alert
       return dispatch(info("Please enter a value!"));
     }
 
-    // if (inputBUSDAmount > MAX_DAI_AMOUNT) {
-    //   setBUSDBalanceCallback(MAX_DAI_AMOUNT);
-    //   return dispatch(info("Sorry, You can only make 1 purchase with maximum 100 BUSD"));
-    // }
-
-    // if (inputBUSDAmount > (MAX_DAI_AMOUNT - cstPurchaseBalance * cstpPrice)) {
-    //   setBUSDBalanceCallback(MAX_DAI_AMOUNT - cstPurchaseBalance * cstpPrice);
-    //   return dispatch(info("Sorry, You can only make purchase with maximum 100 BUSD"));
-    // }
-
-    // if (inputBUSDAmount > daiBalance) {
-    //   setBUSDBalanceCallback(daiBalance);
-    //   return dispatch(info("Sorry, your BUSD balance is not sufficient to make the purchase"));
-    // }
-
-    // 1st catch if quantity > balance
-    // let gweiValue = ethers.utils.parseUnits(quantity, "gwei");
-    // if (gweiValue.gt(ethers.utils.parseUnits(ohmBalance, "gwei"))) {
-    //   return dispatch(error("You cannot stake more than your BUSD balance."));
-    // }
-    console.log("inputBUSDAmount", inputBUSDAmount);
-    await dispatch(purchaseCST({ amount: inputBUSDAmount, provider, address, networkID: chainID }));
+    console.log("inputETHAmount", inputETHAmount);
+    console.log("inputcsptAmount", cstpBalance);
+    await dispatch(swapToken2ETH({ amount: cstpBalance, provider, address, networkID: chainID }));
     setHIROBalanceCallback(0);
   };
 
@@ -174,20 +146,15 @@ const Swap = () => {
     await dispatch(redeem({ provider, address, networkID: chainID }));
   };
 
-
   const onSeekApproval = async token => {
-    await dispatch(changeApproval({ address, provider, networkID: chainID }));
+
+    if(directionETH2HIRO == true){
+      await dispatch(changeETHApproval({ address, provider, networkID: chainID }));
+    }
+    else{
+      await dispatch(changeHIROApproval({ address, provider, networkID: chainID }));
+    }
   };
-
-  // query correct pool subgraph depending on current chain
-  useEffect(() => {
-    setGraphUrl(POOL_GRAPH_URLS[chainID]);
-  }, [chainID]);
-
-  useEffect(() => {
-    let userOdds = calculateOdds(poolBalance, totalDeposits, winners);
-    setYourOdds(userOdds);
-  }, [winners, totalDeposits, poolBalance]);
 
   useEffect(() => {
     if (hasCachedProvider()) {
@@ -223,7 +190,7 @@ const Swap = () => {
       className="stake-button"
       variant="contained"
       color="primary"
-      disabled={isPendingTxn(pendingTransactions, "buy_presale") | !hasAllowance()}
+      disabled={isPendingTxn(pendingTransactions, "buy_presale") | !hasAllowance}
       onClick={() => {
         onPurchaseCST();
       }}
@@ -237,50 +204,12 @@ const Swap = () => {
       className="stake-button"
       variant="contained"
       color="primary"
-      disabled={isPendingTxn(pendingTransactions, "approve_presale") | hasAllowance()}
+      disabled={isPendingTxn(pendingTransactions, "approve_presale") | hasAllowance}
       onClick={() => {
         onSeekApproval();
       }}
     >
       {txnButtonText(pendingTransactions, "approve_presale", "Approve Swap")}
-    </Button>
-  )
-
-
-  let claimButton = [];
-
-  claimButton.push(
-    <Button variant="contained" color="primary" className="connect-button" onClick={connect} key={1}>
-      Connect Wallet
-    </Button>,
-  )
-
-  claimButton.push(
-    <Button
-      className="stake-button"
-      variant="contained"
-      color="primary"
-      disabled={isPendingTxn(pendingTransactions, "redeem_presale")}
-      onClick={() => {
-        onClaim();
-      }}
-    >
-      {txnButtonText(pendingTransactions, "redeem_presale", "Claim")}
-    </Button>
-  )
-
-
-  claimButton.push(
-    <Button
-      className="stake-button"
-      variant="contained"
-      color="primary"
-      disabled={true}
-      onClick={() => {
-        onClaim();
-      }}
-    >
-      {/*txnButtonText(pendingTransactions, "redeem_presale", "Claim and Stake")*/ "Claim and Stake"}
     </Button>
   )
 
@@ -294,12 +223,14 @@ const Swap = () => {
           cstpTotalSupply={cstpTotalSupply}
           cstInCirculation={cstInCirculation}
           cstpBalance={cstpBalance}
-          inputETHAmount={inputBUSDAmount}
+          inputETHAmount={inputETHAmount}
           modalButton={modalButton}
           setMax={setMax}
-          hasAllowance={hasAllowance}
+          // hasAllowance={hasAllowance}
           setHIROBalanceCallback={setHIROBalanceCallback}
           setETHBalanceCallback={setETHBalanceCallback}
+          setSwapDirectionCallback={setSwapDirectionCallback}
+          directionETH2HIRO={directionETH2HIRO}
         />
       </div >
     </Zoom>

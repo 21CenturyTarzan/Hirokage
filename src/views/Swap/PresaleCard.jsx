@@ -8,8 +8,8 @@ import TabPanel from "../../components/TabPanel";
 import CardHeader from "../../components/CardHeader/CardHeader";
 import CustomSelectet from "./CustomSelectet";
 
-export function PresaleCard({address, cstpPrice, cstPurchaseBalance, cstpTotalSupply, cstInCirculation, cstpBalance, inputETHAmount, 
-    hasAllowance, setHIROBalanceCallback, setETHBalanceCallback, setMax, modalButton}) {
+export function PresaleCard({address, cstpBalance, inputETHAmount, directionEHT2HIRO, setSwapDirectionCallback,
+  setHIROBalanceCallback, setETHBalanceCallback, setMax, modalButton}) {
     return (
         <Paper id="swap-view" className="ohm-card">
         <Grid container direction="row" spacing={2}>
@@ -71,7 +71,7 @@ export function PresaleCard({address, cstpPrice, cstPurchaseBalance, cstpTotalSu
                     <Typography variant="h3">S</Typography>
                   </div>
                 </FormControl>
-                <CompareArrows viewBox="0 0 32 32" style={{ height:64, width:64, color:"#ff0" }} />
+                <CompareArrows viewBox="0 0 32 32" style={{ height:64, width:64, color:"#ff0" }} onClick={setSwapDirectionCallback} />
                 <FormControl className="ohm-input" variant="outlined" color="primary" fullWidth>
                   <div style={{visibility:"hidden"}}>
                     <Typography variant="h3">S</Typography>

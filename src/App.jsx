@@ -113,9 +113,9 @@ function App() {
     // network. To actually test rinkeby, change setChainID equal to 4 before testing.
     let loadProvider = provider;
 
-    if (whichDetails === "app") {
+    //if (whichDetails === "app") {
       loadApp(loadProvider);
-    }
+    //}
 
     // don't run unless provider is a Wallet...
     if (whichDetails === "account" && address && connected) {
