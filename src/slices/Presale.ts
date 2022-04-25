@@ -88,6 +88,7 @@ export const changeHiroApproval = createAsyncThunk(
 
     const hiroSwapAllowance = await hiroContract.allowance(address, addresses[networkID].ROUTER_ADDRESS);
     console.log('hiroSwapAllowance+2', hiroSwapAllowance);
+    await dispatch(getBalances({ address, networkID, provider }));
     return dispatch(
       fetchAccountSuccess({
         balance: {
@@ -131,6 +132,7 @@ export const changeETHApproval = createAsyncThunk(
 
     const hethSwapAllowance = await ethContract.allowance(address, addresses[networkID].ROUTER_ADDRESS);
     console.log('hethSwapAllowance+2', hethSwapAllowance);
+    await dispatch(getBalances({ address, networkID, provider }));
     return dispatch(
       fetchAccountSuccess({
         balance: {
@@ -258,7 +260,6 @@ export const swapToken2ETH = createAsyncThunk(
         }
       );
 
-      const text = "Approve Presale";
       const pendingTxnType = "buy_presale";
       dispatch(fetchPendingTxns({ txnHash: approveTx.hash, text: pendingTxnType, type: pendingTxnType }));
 
@@ -282,6 +283,63 @@ export const swapToken2ETH = createAsyncThunk(
 
   },
 );
+
+
+export const swapETH2Token = createAsyncThunk(
+  "presale/purchaseCST",
+  async ({ amount, provider, address, networkID }: IPurchaseCSTAsyncThunk, { dispatch }) => {
+    if (!provider) {
+      dispatch(error("Please connect your wallet!"));
+      return;
+    }
+
+    const signer = provider.getSigner();
+    const routerContract = new ethers.Contract(addresses[networkID].ROUTER_ADDRESS as string, router, signer);
+    const deadline = Math.floor(Date.now() / 1000) + 60 * 20
+    const tokenOut = addresses[networkID].HIRO_ADDRESS;
+    const tokenIn = addresses[networkID].WBNB_TOKEN_ADDRESS;
+    const amountIn = ethers.utils.parseUnits(amount.toString(), 'ether');
+    
+
+    let approveTx;
+    try {
+
+      approveTx = await routerContract.swapExactETHForTokens(
+        0,
+        [tokenIn, tokenOut],
+        address,
+        deadline,
+        {
+          value: amountIn,
+          gasPrice: provider.getGasPrice(),
+          gasLimit: 250000,
+        }
+      );
+
+      const pendingTxnType = "buy_presale";
+      dispatch(fetchPendingTxns({ txnHash: approveTx.hash, text: pendingTxnType, type: pendingTxnType }));
+
+      await approveTx.wait();
+      dispatch(loadAccountDetails({ networkID, address, provider }));
+    } catch (e: unknown) {
+      const errMsg = (e as IJsonRPCError).message;
+      if (errMsg.includes("only whitelisted"))
+        dispatch(error("Your account has not been whitelisted. Please contact Manager."));
+      else if (errMsg.includes("exceed limit"))
+        dispatch(error("Sorry. You exceed limit"));
+      else
+        dispatch(error("Purchase failed."));
+      console.log(errMsg);
+      return;
+    } finally {
+      if (approveTx) {
+        dispatch(clearPendingTxn(approveTx.hash));
+      }
+    }
+
+  },
+);
+
 
 export const redeem = createAsyncThunk(
   "presale/redeem",

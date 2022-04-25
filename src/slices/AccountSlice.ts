@@ -15,17 +15,17 @@ export const getBalances = createAsyncThunk(
   "account/getBalances",
   async ({ address, networkID, provider }: IBaseAddressAsyncThunk) => {
     const hiroContract = new ethers.Contract(addresses[networkID].HIRO_ADDRESS as string, ierc20Abi, provider);
-    const bnbContract = new ethers.Contract(addresses[networkID].WBNB_TOKEN_ADDRESS as string, ierc20Abi, provider);
-    const ohmBalance = await hiroContract.balanceOf(address);
+    const ethContract = new ethers.Contract(addresses[networkID].WBNB_TOKEN_ADDRESS as string, ierc20Abi, provider);
+    const hiroBalance = await hiroContract.balanceOf(address);
+    const ethBalance = await provider.getBalance(address);
     const hswapAllowance = await hiroContract.allowance(address, addresses[networkID].ROUTER_ADDRESS);
-    const bSwapAllowance = await bnbContract.allowance(address, addresses[networkID].ROUTER_ADDRESS);
-    console.log("[tz]: hswap allowance", hswapAllowance);
-    console.log("[tz]: bswap allowance", bSwapAllowance);
+    const bSwapAllowance = await ethContract.allowance(address, addresses[networkID].ROUTER_ADDRESS);
     return {
       balances: {
-        ohm: ethers.utils.formatUnits(ohmBalance, "gwei"),
+        hiroBalance: ethers.utils.formatUnits(hiroBalance, "gwei"),
         hiroSwapAllowance: hswapAllowance,
         ethSwapAllowance: bSwapAllowance,
+        ethBalance: ethers.utils.formatUnits(ethBalance, "ether"),
       },
     };
   },

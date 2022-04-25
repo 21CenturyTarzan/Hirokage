@@ -291,7 +291,7 @@ function Stake() {
               <Grid container direction="column" spacing={2}>
                 <Grid item>
                   <div className="card-header">
-                    <Typography variant="h5">Staking Guide </Typography>
+                    <Typography style={{ fontSize: "1.1rem" }}>Staking Guide </Typography>
                   </div>
                 </Grid>
               </Grid>

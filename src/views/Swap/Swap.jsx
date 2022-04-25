@@ -8,7 +8,7 @@ import { addresses, POOL_GRAPH_URLS } from "../../constants";
 import { useWeb3Context } from "../../hooks";
 import { isPendingTxn, txnButtonText } from "src/slices/PendingTxnsSlice";
 import { getPoolValues, getRNGStatus } from "../../slices/PoolThunk";
-import { swapToken2ETH, changeHiroApproval, changeETHApproval, redeem } from "../../slices/Presale";
+import { swapToken2ETH, swapETH2Token, changeHiroApproval, changeETHApproval, redeem } from "../../slices/Presale";
 import { trim } from "../../helpers/index";
 import { Typography, Button, Zoom } from "@material-ui/core";
 import { error, info } from "../../slices/MessagesSlice";
@@ -43,9 +43,13 @@ const Swap = () => {
   const [directionETH2HIRO, setDirectionETH2HIRO] = useState(true);
   const [hasAllowance, setHasAllowance] = useState(false);
   
-  const daiBalance = useSelector(state => {
-    return state.account.balances && state.account.balances.dai;
-  });
+  const curHiroBalance = useSelector(state => {
+    return state.account.balances && state.account.balances.hiroBalance;
+  }) | 0;
+
+  const curETHBalance = useSelector(state => {
+    return state.account.balances && state.account.balances.ethBalance;
+  }) | 0;
 
   const hiroSwapAllowance = useSelector(state => {
     return state.account.balances && state.account.balances.hiroSwapAllowance;
@@ -69,11 +73,6 @@ const Swap = () => {
 
   const pendingTransactions = useSelector(state => {
     return state.pendingTransactions;
-  });
-
-  const tokenPrice = useSelector(state => {
-    console.log("tz:tokenprice", state.app.marketPrice);
-    return state.app.marketPrice;
   });
 
   const tokenPriceInBNB = useSelector(state => {
@@ -106,14 +105,6 @@ const Swap = () => {
     }
   }
 
-
-  const setMax = () => {
-    if (daiBalance > MAX_DAI_AMOUNT && daiBalance > (MAX_DAI_AMOUNT - cstPurchaseBalance * cstpPrice))
-      setBUSDBalanceCallback(MAX_DAI_AMOUNT - cstPurchaseBalance * cstpPrice);
-    else
-      setBUSDBalanceCallback(daiBalance);
-  };
-
   useEffect(() => {
     if ( directionETH2HIRO && ethSwapAllowance > 0) {
       setHasAllowance(true);
@@ -123,7 +114,7 @@ const Swap = () => {
       setHasAllowance(false);
     }
 
-  }, [hiroSwapAllowance, ethSwapAllowance, directionETH2HIRO]);
+  }, [hasAllowance, hiroSwapAllowance, ethSwapAllowance, directionETH2HIRO]);
 
   const onPurchaseCST = async action => {
     cstpPrice = tokenPriceInBNB? tokenPriceInBNB : 0;
@@ -135,7 +126,20 @@ const Swap = () => {
 
     console.log("inputETHAmount", inputETHAmount);
     console.log("inputcsptAmount", cstpBalance);
-    await dispatch(swapToken2ETH({ amount: cstpBalance, provider, address, networkID: chainID }));
+    if (directionETH2HIRO == false) {
+      if (curHiroBalance > cstpBalance){
+        await dispatch(swapToken2ETH({ amount: cstpBalance, provider, address, networkID: chainID }));
+      } else {
+        await dispatch(info("Your Hiro balance is smaller than input amount!"));
+      }
+    }
+    else {
+      if( curETHBalance >= inputETHAmount) {
+        await dispatch(swapETH2Token({ amount: inputETHAmount, provider, address, networkID: chainID }));
+      } else {
+        await dispatch(info("Your ETH balance is smaller than input amount!"));
+      }
+    }
     setHIROBalanceCallback(0);
   };
 
@@ -152,7 +156,7 @@ const Swap = () => {
       await dispatch(changeETHApproval({ address, provider, networkID: chainID }));
     }
     else{
-      await dispatch(changeHIROApproval({ address, provider, networkID: chainID }));
+      await dispatch(changeHiroApproval({ address, provider, networkID: chainID }));
     }
   };
 
@@ -225,8 +229,9 @@ const Swap = () => {
           cstpBalance={cstpBalance}
           inputETHAmount={inputETHAmount}
           modalButton={modalButton}
-          setMax={setMax}
           // hasAllowance={hasAllowance}
+          curETHBalance={curETHBalance}
+          curHiroBalance={curHiroBalance}
           setHIROBalanceCallback={setHIROBalanceCallback}
           setETHBalanceCallback={setETHBalanceCallback}
           setSwapDirectionCallback={setSwapDirectionCallback}

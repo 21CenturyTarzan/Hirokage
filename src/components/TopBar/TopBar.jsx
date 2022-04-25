@@ -139,7 +139,7 @@ function TopBar({ theme, toggleTheme, handleDrawerToggle }) {
           <Link
             component={NavLink}
             id="stake-nav"
-            to="/#"
+            to="#"
             isActive={(match, location) => {
               return checkPage(match, location, "#");
             }}
