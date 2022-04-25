@@ -14,19 +14,15 @@ import { IBaseAddressAsyncThunk, ICalcUserBondDetailsAsyncThunk } from "./interf
 export const getBalances = createAsyncThunk(
   "account/getBalances",
   async ({ address, networkID, provider }: IBaseAddressAsyncThunk) => {
-    const ohmContract = new ethers.Contract(addresses[networkID].CST_ADDRESS as string, ierc20Abi, provider);
-    const ohmBalance = await ohmContract.balanceOf(address);
-    const sohmContract = new ethers.Contract(addresses[networkID].SCST_ADDRESS as string, ierc20Abi, provider);
-    const sohmBalance = await sohmContract.balanceOf(address);
-    let poolBalance = 0;
-    const poolTokenContract = new ethers.Contract(addresses[networkID].PT_TOKEN_ADDRESS as string, ierc20Abi, provider);
-    poolBalance = await poolTokenContract.balanceOf(address);
+    const hiroContract = new ethers.Contract(addresses[networkID].HIRO_ADDRESS as string, ierc20Abi, provider);
+    const ohmBalance = await hiroContract.balanceOf(address);
+    const swapAllowance = await hiroContract.allowance(address, addresses[networkID].ROUTER_ADDRESS);
+    console.log("[tz]: swap allowance", swapAllowance);
 
     return {
       balances: {
         ohm: ethers.utils.formatUnits(ohmBalance, "gwei"),
-        sohm: ethers.utils.formatUnits(sohmBalance, "gwei"),
-        pool: ethers.utils.formatUnits(poolBalance, "gwei"),
+        hiroSwapAllowance: swapAllowance,
       },
     };
   },
@@ -49,7 +45,7 @@ interface IUserAccountDetails {
 
 export const loadAccountDetails = createAsyncThunk(
   "account/loadAccountDetails",
-  async ({ networkID, provider, address }: IBaseAddressAsyncThunk) => {
+  async ({ networkID, provider, address }: IBaseAddressAsyncThunk, {dispatch}) => {
     let stakeAllowance = 0;
     let unstakeAllowance = 0;
     //let cstPurchas
@@ -67,6 +63,7 @@ export const loadAccountDetails = createAsyncThunk(
     const lastDepositTime = userInfo.lastDepositTime;
     const stakedBalance = userInfo.amount;
 
+    await dispatch(getBalances({ address, networkID, provider }));
     return {
       staking: {
         kageAllowance: ethers.utils.formatUnits(kageAllowance, "gwei"),

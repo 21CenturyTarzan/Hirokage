@@ -55,9 +55,9 @@ export async function  getTokenPriceByPair({ networkID, provider }: IBaseAsyncTh
     // console.log("derivedBNB:", derivedBNB);
 
     const bnbPrice = await getBNBPrice();
-    console.log("[tz]:bnbprice", bnbPrice);
+    // console.log("[tz]:bnbprice", bnbPrice);
     const price = parseFloat(bnbPrice) * derivedBNB
-    console.log("[tz] :: Price of GEN = %s $", price);
+    // console.log("[tz] :: Price of GEN = %s $", price);
     return {tokenPrice: price, derivedBNB: derivedBNB};
   } catch (err) {
     console.log("[GEN] Getting price of token error!");

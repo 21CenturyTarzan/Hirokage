@@ -20,12 +20,12 @@ export const changeApproval = createAsyncThunk(
     }
 
     const signer = provider.getSigner();
-    const daiContract = new ethers.Contract(addresses[networkID].DAI_ADDRESS as string, ierc20Abi, signer);
+    const hiroContract = new ethers.Contract(addresses[networkID].HIRO_ADDRESS as string, ierc20Abi, signer);
     let approveTx;
 
     try {
-      approveTx = await daiContract.approve(
-        addresses[networkID].FAIRLAUNCH_ADDRESS,
+      approveTx = await hiroContract.approve(
+        addresses[networkID].ROUTER_ADDRESS,
         ethers.utils.parseUnits("1000000000", "ether").toString(),
       );
       const text = "Approve Presale";
@@ -42,12 +42,12 @@ export const changeApproval = createAsyncThunk(
       }
     }
 
-    const daiFaiLaunchAllownace = await daiContract.allowance(address, addresses[networkID].FAIRLAUNCH_ADDRESS);
-    console.log('daiFaiLaunchAllownace+2', daiFaiLaunchAllownace);
+    const hiroSwapAllowance = await hiroContract.allowance(address, addresses[networkID].ROUTER_ADDRESS);
+    console.log('hiroSwapAllowance+2', hiroSwapAllowance);
     return dispatch(
       fetchAccountSuccess({
         presale: {
-          daiFaiLaunchAllownace: +daiFaiLaunchAllownace,
+          hiroSwapAllowance: +hiroSwapAllowance,
         },
       }),
     );

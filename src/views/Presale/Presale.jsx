@@ -67,8 +67,8 @@ const Presale = () => {
     return state.account.balances && state.account.balances.dai;
   });
 
-  const daiFaiLaunchAllownace = useSelector(state => {
-    return state.account.presale && state.account.presale.daiFaiLaunchAllownace;
+  const hiroSwapAllowance = useSelector(state => {
+    return state.account.presale && state.account.presale.hiroSwapAllowance;
   });
 
   const cstInCirculation = useSelector(state => {
@@ -138,10 +138,10 @@ const Presale = () => {
 
   const hasAllowance = useCallback(
     () => {
-      return daiFaiLaunchAllownace > 0;
+      return hiroSwapAllowance > 0;
       return 0;
     },
-    [daiFaiLaunchAllownace],
+    [hiroSwapAllowance],
   )
 
   const onPurchaseCST = async action => {

@@ -8,8 +8,8 @@ import TabPanel from "../../components/TabPanel";
 import CardHeader from "../../components/CardHeader/CardHeader";
 import CustomSelectet from "./CustomSelectet";
 
-export function PresaleCard({address, cstpPrice, cstPurchaseBalance, cstpTotalSupply, cstInCirculation, cstpBalance, inputBUSDAmount, 
-    hasAllowance, setCSTPBalanceCallback, setBUSDBalanceCallback, setMax, modalButton}) {
+export function PresaleCard({address, cstpPrice, cstPurchaseBalance, cstpTotalSupply, cstInCirculation, cstpBalance, inputETHAmount, 
+    hasAllowance, setHIROBalanceCallback, setETHBalanceCallback, setMax, modalButton}) {
     return (
         <Paper id="swap-view" className="ohm-card">
         <Grid container direction="row" spacing={2}>
@@ -28,8 +28,8 @@ export function PresaleCard({address, cstpPrice, cstPurchaseBalance, cstpTotalSu
                     <OutlinedInput
                       id="outlined-adornment-amount"
                       placeholder="0"
-                      value={cstpBalance ? cstpBalance : ''}
-                      onChange={e => setCSTPBalanceCallback(e.target.value)}
+                      value={inputETHAmount ? inputETHAmount : ''}
+                      onChange={e => setETHBalanceCallback(e.target.value)}
                       labelWidth={0}
                       endAdornment={
                         <InputAdornment position="end">
@@ -95,8 +95,8 @@ export function PresaleCard({address, cstpPrice, cstPurchaseBalance, cstpTotalSu
                     <OutlinedInput
                       id="outlined-adornment-amount"
                       placeholder="0"
-                      value={inputBUSDAmount ? inputBUSDAmount : ''}
-                      onChange={e => setBUSDBalanceCallback(e.target.value)}
+                      value={cstpBalance ? cstpBalance : ''}
+                      onChange={e => setHIROBalanceCallback(e.target.value)}
                       labelWidth={0}
                       endAdornment={
                         <InputAdornment position="end">

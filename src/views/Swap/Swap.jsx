@@ -54,20 +54,13 @@ const Swap = () => {
   const [yourTotalAwards, setYourTotalAwards] = useState(0);
   const [cstpBalance, setCSTPBalance] = useState(0);
   const [inputBUSDAmount, setBUSDBalance] = useState(0);
-
-  // TODO (appleseed-33T): create a table for AwardHistory
-  const [yourAwardHistory, setYourAwardHistory] = useState([]);
-  const [infoTooltipMessage, setInfoTooltipMessage] = useState([
-    "Deposit sPID to win! Once deposited, you will receive a corresponding amount of 3,3 π and be entered to win until your sPID is withdrawn.",
-  ]);
-  const isAccountLoading = useSelector(state => state.account.loading ?? true);
-
+  
   const daiBalance = useSelector(state => {
     return state.account.balances && state.account.balances.dai;
   });
 
-  const daiFaiLaunchAllownace = useSelector(state => {
-    return state.account.presale && state.account.presale.daiFaiLaunchAllownace;
+  const hiroSwapAllowance = useSelector(state => {
+    return state.account.balances && state.account.balances.hiroSwapAllowance;
   });
 
   const cstInCirculation = useSelector(state => {
@@ -86,44 +79,43 @@ const Swap = () => {
     return state.pendingTransactions;
   });
 
+  const tokenPrice = useSelector(state => {
+    console.log("tz:tokenprice", state.app.marketPrice);
+    return state.app.marketPrice;
+  });
+
+  const tokenPriceInBNB = useSelector(state => {
+    return state.app.priceInBNB;
+  });
+
   const cstPurchaseBalance = useSelector(state => {
     return state.account.presale && state.account.presale.cstPurchaseBalance;
   }) | 0;
 
-  const isFairLunchFinshed = useSelector(state => {
-    return state.account.presale && state.account.presale.isFairLunchFinshed;
-  });
+  // const isFairLunchFinshed = useSelector(state => {
+  //   return state.account.presale && state.account.presale.isFairLunchFinshed;
+  // });
 
-  const pendingPayoutPresale = useSelector(state => {
-    return state.account.presale && state.account.presale.pendingPayoutPresale;
-  });
+  // const pendingPayoutPresale = useSelector(state => {
+  //   return state.account.presale && state.account.presale.pendingPayoutPresale;
+  // });
 
-  const vestingPeriodPresale = useSelector(state => {
-    return state.account.presale && state.account.presale.vestingPeriodPresale;
-  });
+  // const vestingPeriodPresale = useSelector(state => {
+  //   return state.account.presale && state.account.presale.vestingPeriodPresale;
+  // });
 
-  const cstpPrice = 5;
+  let cstpPrice;
 
-  const setCSTPBalanceCallback = (value) => {
-    if ((value * cstpPrice) > MAX_DAI_AMOUNT && (value * cstpPrice) > (MAX_DAI_AMOUNT - cstPurchaseBalance * cstpPrice)) {
-      setBUSDBalance(MAX_DAI_AMOUNT - cstPurchaseBalance * cstpPrice);
-      setCSTPBalance((MAX_DAI_AMOUNT - cstPurchaseBalance * cstpPrice) / cstpPrice);
-    }
-    else {
-      setCSTPBalance(value);
-      setBUSDBalance(value * cstpPrice);
-    }
+  const setHIROBalanceCallback = (value) => {
+    cstpPrice = tokenPriceInBNB? tokenPriceInBNB : 0;
+    setCSTPBalance(value);
+    setBUSDBalance(Number(Number(value * cstpPrice).toFixed(3)));
   }
 
-  const setBUSDBalanceCallback = (value) => {
-    if (value > MAX_DAI_AMOUNT && value > (MAX_DAI_AMOUNT - cstPurchaseBalance * cstpPrice)) {
-      setBUSDBalance(MAX_DAI_AMOUNT - cstPurchaseBalance * cstpPrice);
-      setCSTPBalance((MAX_DAI_AMOUNT - cstPurchaseBalance * cstpPrice) / cstpPrice);
-    }
-    else {
-      setBUSDBalance(value);
-      setCSTPBalance(value / cstpPrice);
-    }
+  const setETHBalanceCallback = (value) => {
+    cstpPrice = tokenPriceInBNB? tokenPriceInBNB : 0;
+    setBUSDBalance(value);
+    setCSTPBalance(Number(Number(value / cstpPrice).toFixed(3)));
   }
 
 
@@ -137,33 +129,33 @@ const Swap = () => {
 
   const hasAllowance = useCallback(
     () => {
-      return daiFaiLaunchAllownace > 0;
-      return 0;
+      return hiroSwapAllowance > 0;
     },
-    [daiFaiLaunchAllownace],
+    [hiroSwapAllowance],
   )
 
   const onPurchaseCST = async action => {
+    cstpPrice = tokenPriceInBNB? tokenPriceInBNB : 0;
     // eslint-disable-next-line no-restricted-globals
     if (isNaN(inputBUSDAmount) || inputBUSDAmount === 0 || inputBUSDAmount === "" || !inputBUSDAmount) {
       // eslint-disable-next-line no-alert
       return dispatch(info("Please enter a value!"));
     }
 
-    if (inputBUSDAmount > MAX_DAI_AMOUNT) {
-      setBUSDBalanceCallback(MAX_DAI_AMOUNT);
-      return dispatch(info("Sorry, You can only make 1 purchase with maximum 100 BUSD"));
-    }
+    // if (inputBUSDAmount > MAX_DAI_AMOUNT) {
+    //   setBUSDBalanceCallback(MAX_DAI_AMOUNT);
+    //   return dispatch(info("Sorry, You can only make 1 purchase with maximum 100 BUSD"));
+    // }
 
-    if (inputBUSDAmount > (MAX_DAI_AMOUNT - cstPurchaseBalance * cstpPrice)) {
-      setBUSDBalanceCallback(MAX_DAI_AMOUNT - cstPurchaseBalance * cstpPrice);
-      return dispatch(info("Sorry, You can only make purchase with maximum 100 BUSD"));
-    }
+    // if (inputBUSDAmount > (MAX_DAI_AMOUNT - cstPurchaseBalance * cstpPrice)) {
+    //   setBUSDBalanceCallback(MAX_DAI_AMOUNT - cstPurchaseBalance * cstpPrice);
+    //   return dispatch(info("Sorry, You can only make purchase with maximum 100 BUSD"));
+    // }
 
-    if (inputBUSDAmount > daiBalance) {
-      setBUSDBalanceCallback(daiBalance);
-      return dispatch(info("Sorry, your BUSD balance is not sufficient to make the purchase"));
-    }
+    // if (inputBUSDAmount > daiBalance) {
+    //   setBUSDBalanceCallback(daiBalance);
+    //   return dispatch(info("Sorry, your BUSD balance is not sufficient to make the purchase"));
+    // }
 
     // 1st catch if quantity > balance
     // let gweiValue = ethers.utils.parseUnits(quantity, "gwei");
@@ -172,7 +164,7 @@ const Swap = () => {
     // }
     console.log("inputBUSDAmount", inputBUSDAmount);
     await dispatch(purchaseCST({ amount: inputBUSDAmount, provider, address, networkID: chainID }));
-    setCSTPBalanceCallback(0);
+    setHIROBalanceCallback(0);
   };
 
   console.log('MAX_DAI_AMOUNT - cstPurchaseBalance * cstpPrice', cstPurchaseBalance);
@@ -298,16 +290,16 @@ const Swap = () => {
         <PresaleCard
           address={address}
           cstPurchaseBalance={cstPurchaseBalance}
-          cstpPrice={cstpPrice}
+          cstpPrice={tokenPriceInBNB}
           cstpTotalSupply={cstpTotalSupply}
           cstInCirculation={cstInCirculation}
           cstpBalance={cstpBalance}
-          inputBUSDAmount={inputBUSDAmount}
+          inputETHAmount={inputBUSDAmount}
           modalButton={modalButton}
           setMax={setMax}
           hasAllowance={hasAllowance}
-          setCSTPBalanceCallback={setCSTPBalanceCallback}
-          setBUSDBalanceCallback={setBUSDBalanceCallback}
+          setHIROBalanceCallback={setHIROBalanceCallback}
+          setETHBalanceCallback={setETHBalanceCallback}
         />
       </div >
     </Zoom>

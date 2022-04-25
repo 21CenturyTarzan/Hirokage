@@ -72,7 +72,7 @@ function TreasuryDashboard() {
                 </Typography>
                 <Typography variant="h5">
                   {/* appleseed-fix */}
-                  {marketPrice ? formatCurrency(marketPrice, 2) : <Skeleton type="text" />}
+                  {marketPrice ? formatCurrency(marketPrice, 3) : <Skeleton type="text" />}
                 </Typography>
               </Grid>
 

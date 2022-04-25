@@ -22,11 +22,13 @@ export const loadAppDetails = createAsyncThunk(
   async ({ networkID, provider }: IBaseAsyncThunk, { dispatch }) => {
    
     let marketPrice;
+    let priceInBNB;
     try {
       const originalPromiseResult = await dispatch(
         loadMarketPrice({ networkID: networkID, provider: provider }),
       ).unwrap();
       marketPrice = originalPromiseResult?.marketPrice;
+      priceInBNB = originalPromiseResult?.bnbRatio;
       // marketPrice = 0.02;
     } catch (rejectedValueOrSerializedError) {
       // handle error here
@@ -55,6 +57,7 @@ export const loadAppDetails = createAsyncThunk(
     let endBlock = 0;
     
     const kageContrat = new ethers.Contract(addresses[networkID].HIRO_ADDRESS as string, ierc20Abi, provider);
+
     const kageStakingContrat = new ethers.Contract(addresses[networkID].HIROSTAKING_ADDRESS as string, kageStakingAbi, provider);
 
     const totalStaked = Number(getDisplayBalance(await kageStakingContrat.totalSupply(), 9));
@@ -96,6 +99,7 @@ export const loadAppDetails = createAsyncThunk(
       stakingRebase : 0,
       marketCap,
       marketPrice,
+      priceInBNB,
       circVal: 0,
       circSupply,
       totalSupply,
@@ -177,6 +181,7 @@ interface IAppData {
   readonly totalSupply: number;
   readonly treasuryMarketValue?: number;
   readonly Staked?: number;
+  readonly priceInBNB?: number;
 }
 
 const appSlice = createSlice({
