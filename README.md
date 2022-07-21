@@ -1,1 +1,3 @@
-# DakeDAO-frontend
+# Hirokage(DakeDAO)-frontend
+
+https://hirokage.acdevdash.com/stake
