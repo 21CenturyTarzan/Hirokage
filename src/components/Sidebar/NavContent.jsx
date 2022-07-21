@@ -94,8 +94,8 @@ function NavContent() {
               /> */}
               <img src={LogoImg} alt="" style={{ width: "100px" }} />
             </Link>
-            <Typography variant="h3" style={{ marginTop: '10px !important' }}>
-              Hiro DAO
+            <Typography variant="h3" style={{ fontSize: "1rem", marginTop: '10px !important' }}>
+              Hirokage.app
             </Typography>
             {address && (
               <div className="wallet-link">
@@ -123,57 +123,6 @@ function NavContent() {
                 </Typography>
               </Link>
 
-              {/* <Link
-                component={NavLink}
-                id="presale-nav"
-                to="/presale"
-                isActive={(match, location) => {
-                  return checkPage(match, location, "Presale");
-                }}
-                className={`button-dapp-menu ${isActive ? "active" : ""}`}
-              >
-                <Typography variant="h6">
-                  <SvgIcon color="primary" component={WrapIcon} />
-                  Presale
-                </Typography>
-              </Link> */}
-
-              {/* <Link
-                component={NavLink}
-                id="bond-nav"
-                to="/bonds"
-                isActive={(match, location) => {
-                  return checkPage(match, location, "bonds");
-                }}
-                className={`button-dapp-menu ${isActive ? "active" : ""}`}
-              >
-                <Typography variant="h6">
-                  <SvgIcon color="primary" component={BondIcon} />
-                  Bond
-                </Typography>
-              </Link>
-
-              <div className="dapp-menu-data discounts">
-                <div className="bond-discounts">
-                  <Typography variant="body2">Bond discounts</Typography>
-                  {bonds.map((bond, i) => (
-                    <Link component={NavLink} to={`/bonds/${bond.name}`} key={i} className={"bond"}>
-                      {!bond.bondDiscount ? (
-                        <Skeleton variant="text" width={"150px"} />
-                      ) : (
-                        <Typography variant="body2">
-                          {bond.displayName}
-                          <span className="bond-pair-roi">
-                            {bond.bondDiscount && trim(bond.bondDiscount * 100, 2)}%
-                          </span>
-                        </Typography>
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              </div> */}
-
-
               <Link
                 component={NavLink}
                 id="stake-nav"
@@ -189,7 +138,7 @@ function NavContent() {
                 </Typography>
               </Link>
 
-              <Link
+              {/* <Link
                 component={NavLink}
                 id="stake-nav"
                 to="/resourcelist"
@@ -200,39 +149,39 @@ function NavContent() {
               >
                 <Typography variant="h6" className="fxCenter">
                   <SvgIcon color="primary" component={ZapIcon} />
-                  Resource
+                  DAO
                 </Typography>
               </Link>
 
               <Link
                 component={NavLink}
                 id="stake-nav"
-                to="/governancelist"
+                to="#"
                 isActive={(match, location) => {
-                  return checkPage(match, location, "governancelist");
+                  return checkPage(match, location, "#");
                 }}
               // className={`button-dapp-menu ${isActive ? "active" : ""}`}
               >
                 <Typography variant="h6" className="fxCenter">
                   <SvgIcon color="primary" component={BondIcon} />
-                  Governance
+                  Incubator
                 </Typography>
               </Link>
 
               <Link
                 component={NavLink}
                 id="stake-nav"
-                to="/finance"
+                to="/swap"
                 isActive={(match, location) => {
-                  return checkPage(match, location, "finance");
+                  return checkPage(match, location, "sinance");
                 }}
               // className={`button-dapp-menu ${isActive ? "active" : ""}`}
               >
                 <Typography variant="h6" className="fxCenter">
                   <SvgIcon color="primary" component={WrapIcon} />
-                  Finance
+                  Swap
                 </Typography>
-              </Link>
+              </Link> */}
 
               {/* <Box className="menu-divider">
                 <Divider />

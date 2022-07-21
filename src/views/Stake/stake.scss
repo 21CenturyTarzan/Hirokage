@@ -23,7 +23,7 @@
     padding: 8px 0px 8px 0px;
     color: black;
     .textpro {
-      font-size: 1.0rem;
+      font-size: 0.9rem;
       margin: 3px 0px 3px 0px;
       color: black;
     }
@@ -114,6 +114,9 @@
   .stake-index {
     align-items: flex-start;
   }
+}
+.MuiButton-label{
+  font-size: 0.9rem !important;
 }
 
 .MuiButton-root {

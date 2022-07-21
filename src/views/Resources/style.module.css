@@ -89,6 +89,9 @@
 }
 .panel {
   padding: 0 50px;
+  @media (max-width: 1200px) {
+    padding: 0 5px;
+  }
 }
 .progress {
   height: 6px;

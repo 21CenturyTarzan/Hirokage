@@ -25,6 +25,9 @@ const Sidebar = ({ open, children, setOpen }) => {
 const StyledContainer = styled(Box)`
   backdrop-filter : blur(33px);
   background-color : #0005;
+  @media (max-width: 600px){
+    width: 90%;
+  }
   .dropdown-toggle{
     color: #333333;
     border: 0;

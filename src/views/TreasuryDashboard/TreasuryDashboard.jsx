@@ -67,7 +67,7 @@ function TreasuryDashboard() {
           <Paper className="ohm-card">
             <Grid container spacing={2} className="data-grid">
               <Grid item lg={4} md={4} sm={4} xs={12}>
-                <Typography variant="h6" color="textSecondary">
+                <Typography variant="h6" >
                   HIRO Price
                 </Typography>
                 <Typography variant="h5">
@@ -77,7 +77,7 @@ function TreasuryDashboard() {
               </Grid>
 
               <Grid item lg={4} md={4} sm={4} xs={12}>
-                <Typography variant="h6" color="textSecondary">
+                <Typography variant="h6" >
                   Current Index
                 </Typography>
                 <Typography variant="h5">
@@ -86,7 +86,7 @@ function TreasuryDashboard() {
               </Grid>
 
               <Grid item lg={4} md={4} sm={4} xs={12}>
-                <Typography variant="h6" color="textSecondary">
+                <Typography variant="h6" >
                   Circulating Supply (total)
                 </Typography>
                 <Typography variant="h5">
@@ -99,7 +99,7 @@ function TreasuryDashboard() {
               </Grid>
 
               <Grid item lg={4} md={4} sm={4} xs={12}>
-                <Typography variant="h6" color="textSecondary">
+                <Typography variant="h6" >
                   APY
                 </Typography>
                 <Typography variant="h5">
@@ -108,7 +108,7 @@ function TreasuryDashboard() {
               </Grid>
 
               <Grid item lg={4} md={4} sm={4} xs={12}>
-                <Typography variant="h6" color="textSecondary">
+                <Typography variant="h6" >
                   HIRO Staked
                 </Typography>
                 <Typography variant="h5">
@@ -116,7 +116,7 @@ function TreasuryDashboard() {
                 </Typography>
               </Grid>
               <Grid item lg={4} md={4} sm={4} xs={12}>
-                <Typography variant="h6" color="textSecondary">
+                <Typography variant="h6" >
                   Market Cap
                 </Typography>
                 <Typography variant="h5">

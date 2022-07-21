@@ -79,7 +79,7 @@ function ConnectMenu({ theme }) {
         onMouseLeave={() => setIsHovering(false)}
         key={1}
       >
-        {buttonText}
+        <span style={{fontSize:"0.9rem"}}>{buttonText}</span>
         {pendingTransactions.length > 0 && (
           <Slide direction="left" in={isHovering} {...{ timeout: 333 }}>
             <SvgIcon className="caret-down" component={CaretDownIcon} htmlColor={primaryColor} />

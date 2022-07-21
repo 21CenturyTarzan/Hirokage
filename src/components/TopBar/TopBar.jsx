@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
   logoTitle: {
     fontFamily: "Black Han Sans, Sans-serif",
     color: "white",
-    fontSize: "20px",
+    fontSize: "1rem",
     paddingLeft: "15px",
   },
   buttonProp: {
@@ -51,7 +51,7 @@ const useStyles = makeStyles(theme => ({
 
 function TopBar({ theme, toggleTheme, handleDrawerToggle }) {
   const classes = useStyles();
-  const isVerySmallScreen = useMediaQuery("(max-width: 355px)");
+  const isSmallScreen = useMediaQuery("(max-width: 600px)");
   const [isActive] = useState();
 
   const checkPage = useCallback((match, location, page) => {
@@ -91,6 +91,8 @@ function TopBar({ theme, toggleTheme, handleDrawerToggle }) {
 
   const ButtonGroup = () => {
     return (
+      <>
+      {isSmallScreen ? <div> </div> : 
       <div className={classes.logo}>
         <img src={LogoImg} alt="" style={{ height: "50px", borderRadius: "50%" }} />
         <span className={classes.logoTitle}>Hirokage.app</span>
@@ -123,7 +125,7 @@ function TopBar({ theme, toggleTheme, handleDrawerToggle }) {
             </Typography>
           </Link>
 
-          <Link
+          {/* <Link
             component={NavLink}
             id="stake-nav"
             to="/resourcelist"
@@ -161,9 +163,11 @@ function TopBar({ theme, toggleTheme, handleDrawerToggle }) {
             <Typography variant="h6" className={classes.buttonProp}>
               Swap
             </Typography>
-          </Link>
+          </Link> */}
         </div>
       </div>
+      }
+    </>
     );
   };
 

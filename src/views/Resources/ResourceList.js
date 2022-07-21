@@ -5,10 +5,11 @@ import Sidebar from "../../components/MySideBar";
 import { MdClose } from "react-icons/md";
 import { ESCROW_PROTOCOL } from "../../utils/address";
 import EscrowFactory from "../../utils/abis/EscrowFactory.json";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 import EscrowABI from "../../utils/abis/EscrowABI.json";
 import axios from "axios";
 import { ethers } from "ethers";
-import { Box, Button, FormControl, Select, MenuItem, FormHelperText } from "@material-ui/core";
+import { Box, Button, FormControl, Select, MenuItem, FormHelperText, Grid } from "@material-ui/core";
 import { useWeb3Context } from "src/hooks";
 import styled from "styled-components";
 
@@ -25,6 +26,7 @@ const ResourceList = ({ }) => {
   const [tokeninfo, setTokenInfo] = useState(null);
   const [totalbalance, setTotalBalance] = useState(0);
   const [isAddToken, setIsAddToken] = useState(false);
+  const isSmallScreen = useMediaQuery("(max-width: 705px)");
 
   async function fetchData() {
     const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
@@ -130,7 +132,7 @@ const ResourceList = ({ }) => {
 
   return (
     <>
-      <Sidebar open={sidebaropen} setOpen={setSideBarOpen}>
+      <Sidebar open={sidebaropen} setOpen={setSideBarOpen} >
         <div className={styles.header}>
           <Box fontSize={'21px'} mt={'20px'}>{isAddToken ? 'Add tokens' : 'Remove tokens'}</Box>
           <MdClose fontSize={20} onClick={() => setSideBarOpen(false)} />
@@ -194,8 +196,8 @@ const ResourceList = ({ }) => {
           ""
         )}
       </Sidebar>
-      <StyledContainer className={styles.panel}>
-        <div className="d-flex justify-content-between">
+      <StyledContainer className={isSmallScreen? '' : styles.panel}>
+        <div className="d-flex justify-content-between" style={{ marginBottom: "30px" }}>
           <Box fontSize={'36px'}>Tokens</Box>
           <Button
             variant="contained"
@@ -210,152 +212,163 @@ const ResourceList = ({ }) => {
           </Button>
         </div>
         <div className="d-flex justify-content-between">
-          <Card className="mt-5 w-75 mr-3 ohm-card" style={{ fontSize: '16px' }}>
-            <Card.Body>
-              <Table>
-                <thead>
-                  <tr>
-                    <th style={{ fontSize: '16px' }}>No</th>
-                    <th style={{ fontSize: '16px' }}>Holders</th>
-                    <th style={{ fontSize: '16px' }}>Balance</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {holders.map((data, i) => {
-                    return (
-                      <tr className="text-white">
-                        <td>{i}</td>
-                        <td>{data.address}</td>
-                        <td >
-                          <div className="mr-3 text-white text-center">{data.balance}</div>
-                        </td>
-                        <td>
-                          
-                          <Box className="basic-dropdown">
-                            <Dropdown>
-                              <Dropdown.Toggle variant="primary" >
-                                Actions
-                              </Dropdown.Toggle>
-                              <Dropdown.Menu>
-                                <Dropdown.Item
-                                  href="#"
-                                  onClick={() => {
-                                    setIsAddToken(false);
-                                    setSideBarOpen(true);
-                                    setRecipientAddress(data.address);
-                                  }}
-                                >
-                                  Remove token
-                                </Dropdown.Item>
-                                <Dropdown.Item href="#">
-                                  Add custom label
-                                </Dropdown.Item>
-                              </Dropdown.Menu>
-                            </Dropdown>
-                          </Box>
-                        </td>
+          <Grid container direction="row" spacing={2}>
+            <Grid item xs={12} sm={12} md={12} lg={8}>
+              <Card className="" style={{ fontSize: '16px', backgroundColor: "#171717f0" }}>
+                <Card.Body>
+                  <Table>
+                    <thead>
+                      <tr>
+                        <th style={{ fontSize: '16px' }}>No</th>
+                        <th style={{ fontSize: '16px' }}>Holders</th>
+                        <th style={{ fontSize: '16px' }}>Balance</th>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-            </Card.Body>
-          </Card>
-          <div className="w-25">
-            <Card className="mt-5" style={{ height: "unset", backgroundColor: "#171717f0"}}>
-              <Card.Body>
-                <Table>
-                  <thead>
-                    <tr>
-                      <th className="w-100"><Box fontSize={'21px'}>Token Info</Box></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr style={{ fontSize: '16px' }}>
-                      <td className="d-flex w-100 justify-content-between">
-                        <div>Total Supply</div>
-                        <strong className="text-white">{tokeninfo && tokeninfo.totalSupply}</strong>
-                      </td>
-                      <td className="d-flex w-100 justify-content-between">
-                        <div>Transferable</div>
-                        <strong className="text-white">
-                          {tokeninfo && tokeninfo.transfersEnabled}
-                        </strong>
-                      </td>
-                      <td className="d-flex w-100 justify-content-between">
-                        <div>Token</div>
-                        <strong className="text-white">
-                          {tokeninfo &&
-                            `${tokeninfo.name.slice(0, 5)}...(${tokeninfo.symbol
-                            })`}
-                        </strong>
-                      </td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </Card.Body>
-            </Card>
-            <Card className="mt-5" style={{ height: "unset", backgroundColor: "#171717f0"}}>
-              <Card.Body>
-                <Table>
-                  <thead>
-                    <tr>
-                      <th className="w-100" style={{ fontSize: '18px' }}>DISTRIBUTION</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr style={{ fontSize: '16px' }}>
-                      <td>
-                        <div className="mt-2">Tokenholder stakes</div>
-                        <div className="d-flex mt-3">
-                          {holders.map((data, i) => {
-                            return (
-                              <div
-                                className={styles.progress}
-                                style={{
-                                  backgroundColor: colors[i],
-                                  width: `calc(100% / ${holders.length})`,
-                                }}
-                              />
-                            );
-                          })}
-                        </div>
-                        <div className="mt-4">
-                          {holders.map((data, i) => {
-                            const ellipsis =
-                              data.address.slice(0, 6) +
-                              "..." +
-                              data.address.substring(
-                                data.address.length - 4,
-                                data.address.length
-                              );
-                            return (
-                              <div className="d-flex justify-content-between text-white mt-2">
-                                <div className="d-flex align-items-center">
+                    </thead>
+                    <tbody>
+                      {holders.map((data, i) => {
+                        return (
+                          <tr className="text-white">
+                            <td>{i}</td>
+                            <td>{isSmallScreen? data.address.slice(0, 5) +
+                                  "..." +
+                                  data.address.substring(
+                                    data.address.length - 3,
+                                    data.address.length
+                                  ) : data.address}</td>
+                            <td >
+                              <div className="mr-3 text-white text-center">{data.balance}</div>
+                            </td>
+                            <td>
+                              
+                              <Box className="basic-dropdown">
+                                <Dropdown>
+                                  <Dropdown.Toggle variant="primary" >
+                                    Actions
+                                  </Dropdown.Toggle>
+                                  <Dropdown.Menu>
+                                    <Dropdown.Item
+                                      href="#"
+                                      onClick={() => {
+                                        setIsAddToken(false);
+                                        setSideBarOpen(true);
+                                        setRecipientAddress(data.address);
+                                      }}
+                                    >
+                                      Remove token
+                                    </Dropdown.Item>
+                                    <Dropdown.Item href="#">
+                                      Add custom label
+                                    </Dropdown.Item>
+                                  </Dropdown.Menu>
+                                </Dropdown>
+                              </Box>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                </Card.Body>
+              </Card>
+            </Grid>
+            <Grid item xs={12} sm={12} md={12} lg={4}>
+              <div className="">
+                <Card className="" style={{ height: "unset", backgroundColor: "#171717f0"}}>
+                  <Card.Body>
+                    <Table>
+                      <thead>
+                        <tr>
+                          <th className="w-100"><Box fontSize={'21px'}>Token Info</Box></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr style={{ fontSize: '16px' }}>
+                          <td className="d-flex w-100 justify-content-between">
+                            <div>Total Supply</div>
+                            <strong className="text-white">{tokeninfo && tokeninfo.totalSupply}</strong>
+                          </td>
+                          <td className="d-flex w-100 justify-content-between">
+                            <div>Transferable</div>
+                            <strong className="text-white">
+                              {tokeninfo && tokeninfo.transfersEnabled}
+                            </strong>
+                          </td>
+                          <td className="d-flex w-100 justify-content-between">
+                            <div>Token</div>
+                            <strong className="text-white">
+                              {tokeninfo &&
+                                `${tokeninfo.name.slice(0, 5)}...(${tokeninfo.symbol
+                                })`}
+                            </strong>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </Table>
+                  </Card.Body>
+                </Card>
+                <Card className="" style={{ height: "unset", backgroundColor: "#171717f0"}}>
+                  <Card.Body>
+                    <Table>
+                      <thead>
+                        <tr>
+                          <th className="w-100" style={{ fontSize: '18px' }}>DISTRIBUTION</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr style={{ fontSize: '16px' }}>
+                          <td>
+                            <div className="mt-2">Tokenholder stakes</div>
+                            <div className="d-flex mt-3">
+                              {holders.map((data, i) => {
+                                return (
                                   <div
-                                    className={styles.ellipse}
-                                    style={{ backgroundColor: colors[i] }}
+                                    className={styles.progress}
+                                    style={{
+                                      backgroundColor: colors[i],
+                                      width: `calc(100% / ${holders.length})`,
+                                    }}
                                   />
-                                  <div className="ml-3">{ellipsis}</div>
-                                </div>
-                                <div>
-                                  {(
-                                    (data.balance / totalbalance) *
-                                    100
-                                  ).toFixed(2)}
-                                  %
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </Card.Body>
-            </Card>
-          </div>
+                                );
+                              })}
+                            </div>
+                            <div className="mt-4">
+                              {holders.map((data, i) => {
+                                const ellipsis =
+                                  data.address.slice(0, 6) +
+                                  "..." +
+                                  data.address.substring(
+                                    data.address.length - 4,
+                                    data.address.length
+                                  );
+                                return (
+                                  <div className="d-flex justify-content-between text-white mt-2">
+                                    <div className="d-flex align-items-center">
+                                      <div
+                                        className={styles.ellipse}
+                                        style={{ backgroundColor: colors[i] }}
+                                      />
+                                      <div className="ml-3">{ellipsis}</div>
+                                    </div>
+                                    <div>
+                                      {(
+                                        (data.balance / totalbalance) *
+                                        100
+                                      ).toFixed(2)}
+                                      %
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </Table>
+                  </Card.Body>
+                </Card>
+              </div>
+            </Grid>
+          </Grid>
         </div>
       </StyledContainer>
     </>

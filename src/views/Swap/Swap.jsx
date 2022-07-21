@@ -49,7 +49,7 @@ const Swap = () => {
 
   const curETHBalance = useSelector(state => {
     return state.account.balances && state.account.balances.ethBalance;
-  }) | 0;
+  });
 
   const hiroSwapAllowance = useSelector(state => {
     return state.account.balances && state.account.balances.hiroSwapAllowance;

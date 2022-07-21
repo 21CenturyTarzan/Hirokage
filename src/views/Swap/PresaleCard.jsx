@@ -21,7 +21,7 @@ export function PresaleCard({address, cstpBalance, inputETHAmount, directionETH2
                     <Typography variant="h4">Swap From</Typography>
                   </div>
                   <Typography style={{ padding: "2px", color: "grey"}}>Your Balance: 
-                  {directionETH2HIRO ? (curETHBalance): (curHiroBalance)}
+                  {directionETH2HIRO ? Number(curETHBalance).toFixed(3): (curHiroBalance)}
                   </Typography>
                 </FormControl>
               </Box>
@@ -55,13 +55,13 @@ export function PresaleCard({address, cstpBalance, inputETHAmount, directionETH2
                 </Grid>
               </Grid>
               <Grid container direction="row" spacing={2}>
-                <Grid container direction="row" item xs={12} sm={12} md={5} lg={5}>
+                <Grid container direction="row" item xs={8} sm={8} md={5} lg={5}>
                   <FormControl className="ohm-input" color="primary" style={{flexDirection: "row"}}>
                     <Settings viewBox="0 0 32 32" style={{ height:50, width:50, color:"#f3d24d" }}/>
                     <Typography variant="h4" style={{marginTop: "10px", fontSize: "1.1rem"}}>Slippage</Typography>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={12} md={3} lg={3}>
+                <Grid item xs={4} sm={4} md={3} lg={3}>
                   <Box alignItems="center">
                     <FormControl className="ohm-input textFieldProp" variant="outlined" color="primary" style={{background: "#e55555"}}>
                       <FormLabel htmlFor="amount-input" className="textpro" >100</FormLabel>
@@ -77,6 +77,9 @@ export function PresaleCard({address, cstpBalance, inputETHAmount, directionETH2
                   <div style={{visibility:"hidden"}}>
                     <Typography variant="h3">S</Typography>
                   </div>
+                  <Typography style={{ padding: "2px", color: "grey", visibility: "hidden" }}>
+                    Your Balance:
+                  </Typography>
                 </FormControl>
                 <CompareArrows viewBox="0 0 32 32" style={{ height:64, width:64, color:"#f3d24d" }} onClick={setSwapDirectionCallback} />
                 <FormControl className="ohm-input" variant="outlined" color="primary" fullWidth>
@@ -95,7 +98,7 @@ export function PresaleCard({address, cstpBalance, inputETHAmount, directionETH2
                     <Typography variant="h4">Swap To</Typography>
                   </div>
                   <Typography style={{ padding: "2px", color: "grey"}}>
-                    Your Balance: {directionETH2HIRO ? curHiroBalance.toString() : curETHBalance}
+                    Your Balance: {directionETH2HIRO ? curHiroBalance.toString() : Number(curETHBalance).toFixed(3)}
                   </Typography>
                 </FormControl>
               </Box>
@@ -129,12 +132,12 @@ export function PresaleCard({address, cstpBalance, inputETHAmount, directionETH2
                 </Grid>
               </Grid>
               <Grid container direction="row" spacing={2}>
-                <Grid item xs={12} sm={12} md={5} lg={5}>
+                <Grid item xs={8} sm={8} md={5} lg={5}>
                   <FormControl className="ohm-input" variant="outlined" color="primary" fullWidth>
                     <Typography variant="h4" style={{marginTop: "10px", fontSize: "1.1rem"}}>Price Impact</Typography>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={12} md={3} lg={3}>
+                <Grid item xs={4} sm={4} md={3} lg={3}>
                   <FormControl className="ohm-input textFieldProp" variant="outlined" color="primary" style={{background: "#e55555"}}>
                     <FormLabel htmlFor="amount-input" className="textpro" >6.9%</FormLabel>
                   </FormControl>
